@@ -11,6 +11,6 @@ public class TopicConsumer {
 
   @KafkaListener(topicPattern = "topicWithDLT")
   public void consume(String message) {
-    LOGGER.info(message);
+    LOGGER.info("Hello world {}", message);
   }
 }

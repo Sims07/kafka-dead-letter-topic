@@ -20,7 +20,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest
 @DirtiesContext
-@EmbeddedKafka
+@EmbeddedKafka(topics = "topicWithDLT")
 public class DeadLetterITest {
 
   @Mock private Appender mockedAppender;
@@ -35,12 +35,15 @@ public class DeadLetterITest {
   }
 
   @Test
-  public void failed_consumer_should_send_to_DLT() throws InterruptedException {
+  public void consumer_should_consume_message_log_hello_world_message()
+      throws InterruptedException {
     kafkaTemplate.send("topicWithDLT", "Test");
 
     Thread.sleep(1000);
 
     BDDMockito.then(mockedAppender).should().doAppend(loggingEventCaptor.capture());
-    BDDAssertions.then(loggingEventCaptor.getValue()).isNotNull();
+    LoggingEvent eventLog = loggingEventCaptor.getValue();
+    BDDAssertions.then(eventLog).isNotNull();
+    BDDAssertions.then(eventLog.getFormattedMessage()).isEqualTo("Hello world Test");
   }
 }

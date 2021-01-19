@@ -80,9 +80,11 @@ class DeadLetterITest {
       String targetedTopic,
       int nbExpectedMessages,
       java.util.function.Consumer<? super ConsumerRecord<String, String>> thenMessageConsumer) {
+
     Consumer<String, String> testConsumerDLT =
         defaultKafkaConsumerFactory.createConsumer("testConsumer", "DLT", "Listener");
     testConsumerDLT.subscribe(Collections.singletonList(targetedTopic));
+
     ConsumerRecords<String, String> consumerRecords = testConsumerDLT.poll(Duration.ofSeconds(3));
     then(consumerRecords.count()).isEqualTo(nbExpectedMessages);
     consumerRecords.records(targetedTopic).forEach(thenMessageConsumer);
